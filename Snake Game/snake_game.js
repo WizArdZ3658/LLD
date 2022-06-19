@@ -85,39 +85,58 @@ class Snake {
 const board = document.getElementById("canvas")
 const ctx = board.getContext('2d');
 
-ctx.fillStyle = '#000000';
-ctx.fillRect(0, 0, 400, 400);
-
- // set line stroke and line width
-// ctx.strokeStyle = 'white';
-// ctx.lineWidth = 5;
-const snake = new Snake(100, 100)
-
-function moveLine(snake) {
-    snake.moveSnake()
-}
-
-function draw(snake) {
-    const startingIndexes = snake.getStartIndexes()
-    const endingIndexes = snake.getEndIndexes()
-    ctx.beginPath();
-    ctx.moveTo(startingIndexes.x, startingIndexes.y);
-    ctx.lineTo(endingIndexes.x, endingIndexes.y);
-    ctx.stroke();
-}
-
-function show() {
-    ctx.clearRect(0,0,board.width, board.height);
-    moveLine(snake);
-    draw(snake);
-}
-
-function loop() {
-    console.log("Loading Frame...")
-    setInterval(show, 1000/20);
-}
-
 window.onload = () => {
     loop();
 }
-// window.requestAnimationFrame(loop)
+
+function loop() {
+    setInterval(show, 1000/20);
+}
+
+function show() {
+    console.log("Loading Frame...")
+    ctx.clearRect(0,0,board.width, board.height);
+    snake.moveSnake()
+    draw(snake);
+}
+
+ctx.fillStyle = '#000000';
+ctx.fillRect(0, 0, 400, 400);
+
+const snake = new Snake(5, 5)
+
+function createRect(x,y,width, height,color) {
+    ctx.fillStyle = color
+    ctx.fillRect(x, y, width, height)
+}
+
+function draw(snake) {
+    createRect(0,0,canvas.width, canvas.height, "black")
+    createRect(0,0, canvas.width, canvas.height)
+
+    for (let i = 0; i < snake.body.length; i++){
+        createRect(snake.body[i].x + 2.5, snake.body[i].y + 2.5,
+            snake.size - 5, snake.size- 5, "white")
+    }
+
+    ctx.font = "20px Arial"
+    ctx.fillStyle = "#00FF42"
+}
+
+window.addEventListener("keydown", (event) => {
+    setTimeout(() => {
+        if (event.keyCode == 37 && snake.direction != DIRECTION.LEFT) {
+            snake.rotateX = -1
+            snake.rotateY = 0
+        } else if (event.keyCode == 38 && snake.rotateY != DIRECTION.UP) {
+            snake.rotateX = 0
+            snake.rotateY = -1
+        } else if (event.keyCode == 39 && snake.rotateX != DIRECTION.RIGHT) {
+            snake.rotateX = 1
+            snake.rotateY = 0
+        } else if (event.keyCode == 40 && snake.rotateY != DIRECTION.DOWN) {
+            snake.rotateX = 0
+            snake.rotateY = 1
+        }
+    }, 1)
+})

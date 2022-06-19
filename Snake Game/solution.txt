@@ -1,0 +1,84 @@
+int main() {
+  game = new Game()
+  game.start()
+  userCommands = ['UP','UP','UP','LEFT', 'LEFT', 'LEFT', 'LEFT','Up','Up','Up'...]
+  
+  for (cmd in userCommands) {
+    game.userInput(cmd)
+    game.updateState()
+    if (game.finished())
+      break;
+  }
+  print("Game Over")
+}
+
+class Game {
+  //constructor
+  void Game() {
+  }
+  void start() {
+  }
+  void userInput(cmd) {
+    switch(cmd) {
+      case "UP"
+      case "DOWN"
+      case "LEFT"
+      case "RIGHT"
+    }
+  }
+  void updateState() {
+    //update snake, board, food, score, collision detection
+  }
+  //return TRUE if game has ended, else FALSE
+  void finished() {
+  }
+}
+
+Solution (Pseudocode)
+
+Class Game {
+  Board board
+  Snake snake
+  GameState state
+  init(len, height) {
+    board = new Board(len, height)
+    snake_head = Coordinate(len/2, height/2)
+    snake = new Snake(snake_head, "left", 3)
+    state = INITIALISED
+  }
+  func start_game() {
+    state = RUNNING
+    while(state == RUNNING) {
+      sleep(1 sec)
+      run_game_step()
+    }
+  }
+  
+  func run_game_step() {
+    update_food()
+    next_head = snake.get_next_head()
+    food = board.get_payload(next_head)
+    snake.move(next_head, food)
+    check_termination_condition()
+  }
+  
+  func check_termination_condition() {
+    //if snake collided with itself
+      state = "FINISHED"
+    //if snake collided with wall
+      state = "FINISHED"
+  }
+  
+  func update_food() {
+    //add food if not present etc.
+  }
+  
+  //called when user presses a button
+  func user_input(button b) {
+    swith(b){
+    case LEFT_BUTTON:
+      snake.update_direction(LEFT)
+    case RIGHT_BUTTON:
+      snake.update_direction(RIGHT)
+    case UP_BUTTON:
+      snake.update_direction
