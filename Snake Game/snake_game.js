@@ -51,92 +51,119 @@ class Snake {
     direction = DIRECTION.DOWN;
 
     constructor(x, y) {
-        this.x = x;
-        this.y = y;
         this.body.enqueue({
-            x : this.x, 
-            y : this.y
+            x : x, 
+            y : y
         })
+    }
+
+    setDirection(direction) {
+        this.direction = direction
     }
 
     getEndIndexes() {
         const endIndexes = this.body.back();
-        return {
-            x: endIndexes.x,
-            y: endIndexes.y
-        }
+        return endIndexes
     }
 
     getStartIndexes() {
         const startIndexes = this.body.front();
-        return {
-            x: startIndexes.x,
-            y: startIndexes.y
-        }
+        return startIndexes
     }
 
     moveSnake() {
+        const startIndexes = this.body.front();
         const index = this.body.dequeue();
-        index.x += 1;
-        this.body.enqueue({index});
+        if (this.direction == DIRECTION.DOWN) {
+            index.y = startIndexes.y + 1;
+        } else if (this.direction == DIRECTION.LEFT) {
+            index.x = startIndexes.x - 1;
+        } else if (this.direction == DIRECTION.RIGHT) {
+            index.x = startIndexes.x + 1;
+        } else {
+            index.y = startIndexes.y - 1;
+        }
+        this.body.enqueue(index);
     }
 }
 
-const board = document.getElementById("canvas")
-const ctx = board.getContext('2d');
+const canvas = document.getElementById("canvas")
+const canvasContext = canvas.getContext('2d');
 
 window.onload = () => {
-    loop();
+    gameLoop();
 }
 
-function loop() {
-    setInterval(show, 1000/20);
+function gameLoop() {
+    setInterval(show, 1000/1);
 }
 
 function show() {
     console.log("Loading Frame...")
-    ctx.clearRect(0,0,board.width, board.height);
+    // update
+    canvasContext.clearRect(0,0,canvas.width, canvas.height);
     snake.moveSnake()
+    // checkHitWall()
+
+    // draw
     draw(snake);
 }
 
-ctx.fillStyle = '#000000';
-ctx.fillRect(0, 0, 400, 400);
+canvasContext.fillStyle = '#000000';
+canvasContext.fillRect(0, 0, 400, 400);
 
 const snake = new Snake(5, 5)
 
 function createRect(x,y,width, height,color) {
-    ctx.fillStyle = color
-    ctx.fillRect(x, y, width, height)
+    canvasContext.fillStyle = color
+    canvasContext.fillRect(x, y, width, height)
+}
+
+function checkHitWall() {
+    let headTail = snake.getStartIndexes()
+
+    if (headTail.x == - snake.size) {
+        headTail.x = canvas.width - snake.size
+    } else if (headTail.x == canvas.widh) {
+        headTail.x = 0
+    } else if (headTail.y == - snake.size) {
+        headTail.y = canvas.height - snake.size
+    } else if (headTail.y == canvas.height) {
+        headTail.y = 0 
+    }
 }
 
 function draw(snake) {
-    createRect(0,0,canvas.width, canvas.height, "black")
+    createRect(0,0, canvas.width, canvas.height, "black")
     createRect(0,0, canvas.width, canvas.height)
 
-    for (let i = 0; i < snake.body.length; i++){
-        createRect(snake.body[i].x + 2.5, snake.body[i].y + 2.5,
-            snake.size - 5, snake.size- 5, "white")
+    for (let i = 0; i < snake.body.items.length; i++){
+        createRect(snake.body.items[i].x, snake.body.items[i].y, 5, 5, "white")
     }
-
-    ctx.font = "20px Arial"
-    ctx.fillStyle = "#00FF42"
 }
 
-window.addEventListener("keydown", (event) => {
-    setTimeout(() => {
-        if (event.keyCode == 37 && snake.direction != DIRECTION.LEFT) {
-            snake.rotateX = -1
-            snake.rotateY = 0
-        } else if (event.keyCode == 38 && snake.rotateY != DIRECTION.UP) {
-            snake.rotateX = 0
-            snake.rotateY = -1
-        } else if (event.keyCode == 39 && snake.rotateX != DIRECTION.RIGHT) {
-            snake.rotateX = 1
-            snake.rotateY = 0
-        } else if (event.keyCode == 40 && snake.rotateY != DIRECTION.DOWN) {
-            snake.rotateX = 0
-            snake.rotateY = 1
+window.addEventListener('keydown', function (event) {
+    setTimeout(function () {
+        const key = event.key
+        switch (key) {
+            case 'ArrowUp':
+                snake.setDirection(DIRECTION.UP)
+                break;
+            case 'ArrowDown':
+                snake.setDirection(DIRECTION.DOWN)
+                break;
+        
+            case 'ArrowLeft':
+                snake.setDirection(DIRECTION.LEFT)
+                break;
+        
+            case 'ArrowRight':
+                snake.setDirection(DIRECTION.RIGHT)
+                break;
+        
+            default:
+                event.preventDefault()
+                break;
         }
     }, 1)
 })
